@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>한국 밈 사운드보드</title>
+<meta name="description" content="레게노, 킹받네, 안물안궁 등 요즘 유행하는 한국 밈 사운드를 눌러서 바로 들어보는 무료 사운드보드예요.">
+<meta property="og:title" content="한국 밈 사운드보드">
+<meta property="og:description" content="요즘 유행하는 한국 밈 사운드를 눌러서 바로 재생해보세요.">
+<meta property="og:type" content="website">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <style>
@@ -130,25 +134,14 @@
    그대로 붙여넣어 통째로 교체하면 돼요.
    ============================================================ */
 const MEMES = [
-  {
-    "emoji": "🎤",
-    "label": "거제 야호~!",
-    "videoId": "rPYxlm6LtOU",
-    "start": 4,
-    "duration": 3
-  },
-  {
-    "emoji": "🎤",
-    "label": "구수한뽕짝고속도로트로트",
-    "videoId": "vfbvSOWXODc",
-    "start": 0,
-    "duration": 11
-  }
+  {emoji:'🎤', label:'거제 야호~!', videoId:'rPYxlm6LtOU', start:4, duration:3},
+  {emoji:'🎤', label:'구수한뽕짝고속도로트로트', videoId:'vfbvSOWXODc', start:0, duration:11},
 ];
 
 const PHRASES = [
-  "야르"
+  '야르'
 ];
+
 const ACCENTS = ['#FFE29A','#FFC2D6','#B8F0E6','#D6CCFB','#BFE2FF'];
 
 let ytPlayer=null, ytReady=false, pauseTimer=null;

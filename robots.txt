@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://yoonio.github.io/MEMEKEYS/sitemap.xml
+Sitemap: https://yoonio.github.io/sitemap.xml

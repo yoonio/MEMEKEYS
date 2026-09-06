@@ -106,8 +106,14 @@
 
   footer{
     text-align:center; color:var(--text-dim); font-size:11px; font-weight:400;
-    margin-top:36px; padding:0 20px; line-height:1.7;
+    margin-top:36px; padding:0 20px; line-height:1.9;
   }
+
+  .about{
+    margin-top:44px; padding-top:24px; border-top:1px solid var(--border);
+  }
+  .about h2{ font-size:15px; font-weight:800; margin:0 0 12px; }
+  .about p{ font-size:13px; color:var(--text-dim); line-height:1.8; margin:0 0 12px; }
 </style>
 </head>
 <body>
@@ -119,10 +125,18 @@
 <main>
   <div class="ticker"><span id="tickerText"></span></div>
   <div class="grid" id="grid"></div>
+
+  <section class="about">
+    <h2>한국 밈 사운드보드란?</h2>
+    <p>레게노, 킹받네, 안물안궁처럼 인터넷과 방송을 타고 퍼진 한국 밈 사운드를 클릭 한 번으로 들어볼 수 있는 사이트예요. 매번 유튜브에서 그 장면을 다시 찾아 재생하는 대신, 버튼 하나로 원하는 순간의 사운드만 골라 들을 수 있도록 만들었어요.</p>
+    <p>한국 인터넷 밈 문화는 방송, 커뮤니티, SNS를 거치며 빠르게 새로운 유행어와 사운드를 만들어내요. 이 사이트는 그중에서도 특히 소리로 기억되는 순간들 — 예능 자막 효과음, 스트리머의 리액션, 유행어가 터진 그 장면 — 을 모아두는 걸 목표로 해요.</p>
+    <p>재생되는 모든 사운드는 실제 유튜브 영상을 통해 스트리밍되며, 별도로 파일을 저장하거나 배포하지 않아요. 저작권은 원본 영상을 올린 채널에 있습니다.</p>
+  </section>
 </main>
 
 <footer>
-  실제 유튜브 영상을 통해 재생됩니다 · 원본 저작권은 각 채널에 있어요
+  실제 유튜브 영상을 통해 재생됩니다 · 원본 저작권은 각 채널에 있어요<br>
+  <a href="./privacy.html" style="color:inherit;">개인정보처리방침</a>
 </footer>
 
 <div style="position:fixed; bottom:0; right:0; width:2px; height:2px; overflow:hidden; opacity:0.01; pointer-events:none;">

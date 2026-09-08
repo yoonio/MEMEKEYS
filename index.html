@@ -176,8 +176,9 @@
 
 <script>
 /* ============================================================
-   아래 두 배열은 admin.html에서 "내보내기"로 복사한 코드를
+   아래 배열은 admin.html에서 "내보내기"로 복사한 코드를
    그대로 붙여넣어 통째로 교체하면 돼요.
+   (상단 순환 문구는 이 목록의 밈 이름을 자동으로 가져와서 표시돼요)
    ============================================================ */
 const MEMES = [
   {
@@ -570,7 +571,7 @@ const MEMES = [
     "label": "이 차는 이제 제껍니다",
     "videoId": "rFEbAEnU8-o",
     "start": 0,
-    "duration": 3,
+    "duration": 5,
     "tags": [
       "뉴스"
     ]
@@ -609,8 +610,8 @@ const MEMES = [
     "emoji": "🦹‍♀",
     "label": "무대를 뒤집어 놓으셨다",
     "videoId": "8Rr0BazxfY0",
-    "start": 181,
-    "duration": 12,
+    "start": 183,
+    "duration": 9,
     "tags": []
   },
   {
@@ -621,11 +622,6 @@ const MEMES = [
     "duration": 2,
     "tags": []
   }
-];
-
-const PHRASES = [
-  "야르",
-  "허저 바보"
 ];
 
 const ACCENTS = ['#FFE29A','#FFC2D6','#B8F0E6','#D6CCFB','#BFE2FF'];
@@ -667,18 +663,34 @@ function escapeHtml(s){return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&
 
 document.getElementById('searchBox').addEventListener('input', (e)=> renderGrid(e.target.value));
 
-/* ---- 문구 순환 티커 ---- */
+/* ---- 밈 이름 무작위 순환 티커 ---- */
+function shuffle(arr){
+  const a = [...arr];
+  for (let i=a.length-1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+let tickerList = [];
 let tickerIndex = 0;
 function rotateTicker(){
   const el = document.getElementById('tickerText');
-  const list = PHRASES.length ? PHRASES : ['눌러보세요'];
-  el.textContent = list[tickerIndex % list.length];
+  const names = MEMES.filter(m=>m.videoId).map(m=>m.label);
+  tickerList = names.length ? shuffle(names) : ['눌러보세요'];
+  tickerIndex = 0;
+  el.textContent = tickerList[0];
   el.classList.remove('fade');
   setInterval(()=>{
     el.classList.add('fade');
     setTimeout(()=>{
       tickerIndex++;
-      el.textContent = list[tickerIndex % list.length];
+      if (tickerIndex >= tickerList.length){
+        const names = MEMES.filter(m=>m.videoId).map(m=>m.label);
+        tickerList = names.length ? shuffle(names) : ['눌러보세요'];
+        tickerIndex = 0;
+      }
+      el.textContent = tickerList[tickerIndex];
       el.classList.remove('fade');
     }, 600);
   }, 12000);

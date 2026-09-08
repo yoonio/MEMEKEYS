@@ -60,6 +60,14 @@
   }
   .ticker span.fade{opacity:0;}
 
+  .search-box{
+    display:block; width:100%; max-width:360px; margin:0 auto 20px;
+    padding:10px 16px; border-radius:999px; border:1px solid var(--border);
+    background:var(--panel); color:var(--text); font-family:inherit; font-size:13px;
+  }
+  .search-box:focus{outline:none; border-color:var(--gold);}
+  .search-box::placeholder{color:var(--text-dim);}
+
   .grid{
     display:grid;
     grid-template-columns:repeat(auto-fill, minmax(84px, 1fr));
@@ -105,6 +113,13 @@
     text-align:center;
   }
 
+  .request{
+    text-align:center; font-size:12.5px; color:var(--text-dim);
+    margin:22px 0 0;
+  }
+  .request a{ color:var(--violet); font-weight:700; text-decoration:none; }
+  .request a:hover{ text-decoration:underline; }
+
   .empty{
     grid-column:1/-1;
     text-align:center; padding:60px 20px; color:var(--text-dim);
@@ -134,7 +149,13 @@
 
 <main>
   <div class="ticker"><span id="tickerText"></span></div>
+  <input type="text" id="searchBox" class="search-box" placeholder="🔍 밈 검색 (이름, 태그로 찾기)">
   <div class="grid" id="grid"></div>
+
+  <p class="request">
+    찾는 밈이 없나요?
+    <a href="mailto:dogfootja@proton.me?subject=%EB%B0%88%20%EC%8B%A0%EC%B2%AD&body=%EB%B0%88%20%EC%9D%B4%EB%A6%84%3A%20%0A%EC%9C%A0%ED%8A%9C%EB%B8%8C%20%EB%A7%81%ED%81%AC%20%EB%B0%8F%20%EC%8B%9C%EA%B0%81%3A%20">✉️ 밈 신청하기</a>
+  </p>
 
   <section class="about">
     <h2>MEMEKEYS란?</h2>
@@ -289,11 +310,21 @@ const ACCENTS = ['#FFE29A','#FFC2D6','#B8F0E6','#D6CCFB','#BFE2FF'];
 
 let ytPlayer=null, ytReady=false, pauseTimer=null;
 
-function renderGrid(){
+function renderGrid(query){
   const grid = document.getElementById('grid');
-  const active = MEMES.filter(m => m.videoId);
+  let active = MEMES.filter(m => m.videoId);
+  const q = (query||'').trim().toLowerCase();
+  if (q){
+    active = active.filter(m=>{
+      const inLabel = (m.label||'').toLowerCase().includes(q);
+      const inTags = (m.tags||[]).some(t => (t||'').toLowerCase().includes(q));
+      return inLabel || inTags;
+    });
+  }
   if (active.length === 0){
-    grid.innerHTML = `<div class="empty">
+    grid.innerHTML = q
+      ? `<div class="empty"><div class="big">🔍</div>검색 결과가 없어요<span class="small">"${escapeHtml(query)}" 관련 밈을 못 찾았어요</span></div>`
+      : `<div class="empty">
       <div class="big">🎙️</div>
       아직 등록된 밈이 없어요
       <span class="small">admin.html에서 등록 후 이 파일에 붙여넣어주세요</span>
@@ -311,6 +342,8 @@ function renderGrid(){
   });
 }
 function escapeHtml(s){return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+document.getElementById('searchBox').addEventListener('input', (e)=> renderGrid(e.target.value));
 
 /* ---- 문구 순환 티커 ---- */
 let tickerIndex = 0;
@@ -334,11 +367,29 @@ function loadYT(){
   tag.src = "https://www.youtube.com/iframe_api";
   document.body.appendChild(tag);
 }
+let pendingStart = null;
+let playToken = 0;
 window.onYouTubeIframeAPIReady = function(){
   ytPlayer = new YT.Player('yt-player', {
     height:'2', width:'2',
     playerVars:{autoplay:0, controls:0, disablekb:1, modestbranding:1},
-    events:{ onReady: () => { ytReady = true; } }
+    events:{
+      onReady: () => { ytReady = true; },
+      onStateChange: (e) => {
+        if (e.data === YT.PlayerState.PLAYING && pendingStart && pendingStart.token === playToken){
+          const info = pendingStart;
+          pendingStart = null;
+          clearTimeout(pauseTimer);
+          pauseTimer = setTimeout(()=>{
+            if (playToken === info.token){
+              ytPlayer.pauseVideo();
+              info.el.classList.remove('playing');
+              currentPlayingEl = null;
+            }
+          }, info.duration*1000);
+        }
+      }
+    }
   });
 };
 loadYT();
@@ -351,6 +402,8 @@ function play(i, el){
 
   // 이미 재생 중인 버튼을 다시 누르면 정지
   if (currentPlayingEl === el){
+    playToken++;
+    pendingStart = null;
     clearTimeout(pauseTimer);
     ytPlayer.pauseVideo();
     el.classList.remove('playing');
@@ -358,19 +411,18 @@ function play(i, el){
     return;
   }
 
-  clearTimeout(pauseTimer);
   document.querySelectorAll('.key.playing').forEach(c=>c.classList.remove('playing'));
+  clearTimeout(pauseTimer);
+  playToken++;
+  const myToken = playToken;
   el.classList.add('playing');
   currentPlayingEl = el;
 
   ytPlayer.loadVideoById({videoId:m.videoId, startSeconds:m.start||0});
   ytPlayer.unMute(); ytPlayer.setVolume(100);
 
-  pauseTimer = setTimeout(()=>{
-    ytPlayer.pauseVideo();
-    el.classList.remove('playing');
-    currentPlayingEl = null;
-  }, (m.duration||3)*1000);
+  // 실제로 "재생 시작"되는 순간부터 재생 길이를 세기 위해 대기
+  pendingStart = {token:myToken, el, duration:m.duration||3};
 }
 
 renderGrid();
